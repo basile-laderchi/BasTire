@@ -1,0 +1,3 @@
+notes:
+zig-zag tread
+tank-like tread (http://www.thingiverse.com/thing:56606)

@@ -1,4 +1,4 @@
-tread_type = "simple";
+tread_type = "simple"; // (simple, tube)
 tread_angle = 10;
 tread_height = 0.5;
 tread_width = 1;
@@ -11,12 +11,13 @@ rim_height = 1;
 
 /*
  *
- * BasTire v1.01
+ * BasTire v1.02
  *
  * by Basile Laderchi
  *
  * Licensed under Creative Commons Attribution-ShareAlike 3.0 Unported http://creativecommons.org/licenses/by-sa/3.0/
  *
+ * v 1.02, 29 August 2013 : Added tread_type "tube", in tread_type "simple" changed from cubes to arcs
  * v 1.01, 27 August 2013 : Fixed invalid Manifold
  * v 1.00, 27 August 2013 : Initial release
  *
@@ -24,11 +25,22 @@ rim_height = 1;
 
 basTire(tread_type, tread_angle, tread_height, tread_width, tire_thickness, wheel_diameter, wheel_height, rim_height, $fn=100);
 
+use <MCAD/2Dshapes.scad>
+
 module basTire(tread_type, tread_angle, tread_height, tread_width, tire_thickness, wheel_diameter, wheel_height, rim_height) {
 	union() {
 		tire(tire_thickness, wheel_diameter, wheel_height, rim_height);
 		tread(tread_type, tread_angle, tread_height, tread_width, tire_thickness, wheel_diameter, wheel_height, rim_height);
 	}
+}
+
+module wheel(wheel_diameter, wheel_height, rim_height) {
+	padding = 0.1;
+
+	wheel_radius = wheel_diameter / 2;
+	height = wheel_height - rim_height * 2;
+
+	cylinder(r=wheel_radius, h=height + padding, center=true);
 }
 
 module tire(thickness, wheel_diameter, wheel_height, rim_height) {
@@ -44,13 +56,27 @@ module tread(type, angle, height, width, tire_thickness, wheel_diameter, wheel_h
 
 	wheel_radius = wheel_diameter / 2;
 	tire_radius = wheel_radius + tire_thickness;
+	tire_circumference = 2 * PI * tire_radius;
 	tire_height = wheel_height - rim_height * 2;
+	tire_height_padded = tire_height + padding * 2;
+	slice_width = width / tire_circumference * 360;
 
 	if (type == "simple") {
 	  for (i = [0 : 360 / angle]) {
 			rotate([0, 0, i * angle]) {
-				translate([tire_radius + height / 2 + padding, 0, 0]) {
-					cube([height + padding * 2, width, tire_height], center=true);
+				translate([0, 0, -tire_height / 2]) {
+					donutSlice3D(tire_radius, tire_radius + height, 0, slice_width, tire_height);
+				}
+			}
+		}
+	} else if (type == "tube") {
+		rotate_extrude() {
+			translate([tire_radius, 0, 0]) {
+				difference() {
+					circle(r=tire_height / 2);
+					translate([-tire_height_padded, -tire_height_padded / 2, 0]) {
+						square(tire_height_padded);
+					}
 				}
 			}
 		}
@@ -65,5 +91,11 @@ module ring(radius, thickness, height) {
 	difference() {
 		cylinder(r=radius, h=height, center=true);
 		cylinder(r=inner_radius, h=height + padding, center=true);
+	}
+}
+
+module donutSlice3D(innerSize, outerSize, start_angle, end_angle, height) {
+	linear_extrude(height=height, convexity=10) {
+		donutSlice(innerSize, outerSize, start_angle, end_angle);
 	}
 }
