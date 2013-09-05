@@ -1,3 +1,4 @@
 notes:
 zig-zag tread
 tank-like tread (http://www.thingiverse.com/thing:56606)
+the teeth on the wheel are straight as are the teeth on the inside of the track, only the tread need to be angled (like http://www.unusuallocomotion.com/pages/locomotion/the-wheel-reinvented.html number 19)
