@@ -1,23 +1,28 @@
-tread_type = "simple"; // (simple, hemispherical, tube)
+tire_type = "auto"; // (flat, hemispherical, bike, auto)
+tread_type = "none"; // (none, simple)
 tread_angle = 10;
 tread_height = 0.5;
 tread_width = 1;
 tire_thickness = 1;
-hollow_tube_thickness = 0;
+auto_tire_roundness_radius = 2;
+hollow_tire_thickness = 1;
 
 // Same as BasWheel parameters
 wheel_diameter = 60;
 wheel_height = 10;
+rim_width = 1;
 rim_height = 1;
 
 /*
  *
- * BasTire v1.05
+ * BasTire v2.01
  *
  * by Basile Laderchi
  *
  * Licensed under Creative Commons Attribution-ShareAlike 3.0 Unported http://creativecommons.org/licenses/by-sa/3.0/
  *
+ * v 2.01, 11 September 2013 : Added old tread_type to tire_type. Renamed old tread_type "tube" to tire_type "bike". Added tire_type "auto"
+ * v 2.00, 10 September 2013 : Added tire_type and rim_width (from wheel) parameters. Change values accepted for tread_type parameter. Changed hollow_tube_thickness parameter to hollow_tire_thickness
  * v 1.05,  6 September 2013 : Added tread_type "tube". It can use the hollow_tube_thickness parameter
  * v 1.04,  6 September 2013 : Renamed tread_type "tube" to "hemispherical" and dropped tread_type "hollow_tube"
  * v 1.03,  5 September 2013 : Added tread_type "hollow_tube" and hollow_tube_thickness parameter
@@ -27,16 +32,14 @@ rim_height = 1;
  *
  */
 
-basTire(tread_type, tread_angle, tread_height, tread_width, tire_thickness, hollow_tube_thickness, wheel_diameter, wheel_height, rim_height, $fn=100);
+basTire(tire_type, tread_type, tread_angle, tread_height, tread_width, tire_thickness, auto_tire_roundness_radius, hollow_tire_thickness, wheel_diameter, wheel_height, rim_width, rim_height, $fn=100);
 
 use <MCAD/2Dshapes.scad>
 
-module basTire(tread_type, tread_angle, tread_height, tread_width, tire_thickness, hollow_tube_thickness, wheel_diameter, wheel_height, rim_height) {
+module basTire(tire_type, tread_type, tread_angle, tread_height, tread_width, tire_thickness, auto_tire_roundness_radius, hollow_tire_thickness, wheel_diameter, wheel_height, rim_width, rim_height) {
 	union() {
-		if (tread_type != "tube") {
-			tire(tire_thickness, wheel_diameter, wheel_height, rim_height);
-		}
-		tread(tread_type, tread_angle, tread_height, tread_width, tire_thickness, hollow_tube_thickness, wheel_diameter, wheel_height, rim_height);
+		tire(tire_type, tire_thickness, auto_tire_roundness_radius, hollow_tire_thickness, wheel_diameter, wheel_height, rim_width, rim_height);
+		tread(tread_type, tread_angle, tread_height, tread_width, tire_thickness, wheel_diameter, wheel_height, rim_height);
 	}
 }
 
@@ -49,22 +52,119 @@ module wheel(wheel_diameter, wheel_height, rim_height) {
 	cylinder(r=wheel_radius, h=height + padding, center=true);
 }
 
-module tire(thickness, wheel_diameter, wheel_height, rim_height) {
+module tire(type, thickness, auto_roundness_radius, hollow_thickness, wheel_diameter, wheel_height, rim_width, rim_height) {
+	padding = 0.1;
+
 	wheel_radius = wheel_diameter / 2;
 	radius = wheel_radius + thickness;
 	height = wheel_height - rim_height * 2;
+	height_padded = height + padding * 2;
 
-	ring(radius, thickness, height);
+	union() {
+		if (type == "flat" || type == "hemispherical") {
+			ring(radius, thickness, height);
+		}
+		if (type == "hemispherical") {
+			rotate_extrude() {
+				translate([radius, 0, 0]) {
+					difference() {
+						circle(r=height / 2);
+						translate([-height_padded, -height_padded / 2, 0]) {
+							square(height_padded);
+						}
+					}
+				}
+			}
+		} else if (type == "bike") {
+			rotate_extrude() {
+				translate([wheel_radius, 0, 0]) {
+					difference() {
+						union() {
+							hull() {
+								translate([wheel_height / 2 + rim_width + 0.5, 0, 0]) {
+									circle(r=wheel_height / 2);
+								}
+								translate([rim_width, -height / 2, 0]) {
+									square([0.5, height]);
+								}
+							}
+							translate([0, -height / 2, 0]) {
+								square([rim_width, height]);
+							}
+						}
+						if (hollow_thickness > 0) {
+							inner_tire(type, hollow_thickness, wheel_height, rim_width, rim_height, padding);
+						}
+					}
+				}
+			}
+		} else if (type == "auto") {
+			rotate_extrude() {
+				translate([wheel_radius, 0, 0]) {
+					difference() {
+						union() {
+							hull() {
+								if (auto_roundness_radius < wheel_height / 2) {
+									translate([rim_width + wheel_height + 0.5, -wheel_height / 2 + auto_roundness_radius, 0]) {
+										square([0.5, wheel_height - auto_roundness_radius * 2]);
+									}
+									translate([rim_width + wheel_height - auto_roundness_radius + 1, wheel_height / 2 - auto_roundness_radius, 0]) {
+										circle(r=auto_roundness_radius);
+									}
+									translate([rim_width + wheel_height - auto_roundness_radius + 1, -wheel_height / 2 + auto_roundness_radius, 0]) {
+										circle(r=auto_roundness_radius);
+									}
+								} else {
+									translate([rim_width + wheel_height + 0.5, -wheel_height / 2, 0]) {
+										square([0.5, wheel_height]);
+									}
+								}
+								translate([wheel_height / 2 + rim_width + 0.5, 0, 0]) {
+									circle(r=wheel_height / 2);
+								}
+								translate([rim_width, -height / 2, 0]) {
+									square([0.5, height]);
+								}
+							}
+							translate([0, -height / 2, 0]) {
+								square([rim_width, height]);
+							}
+						}
+						if (hollow_thickness > 0) {
+							inner_tire(type, hollow_thickness, wheel_height, rim_width, rim_height, padding);
+						}
+					}
+				}
+			}
+		}
+	}
 }
 
-module tread(type, angle, height, width, tire_thickness, hollow_tube_thickness, wheel_diameter, wheel_height, rim_height) {
-	padding = 0.1;
+module inner_tire(type, hollow_thickness, wheel_height, rim_width, rim_height, padding) {
+	height = wheel_height - rim_height * 2;
 
+	if (type == "bike" || type == "auto") {
+		union() {
+			hull() {
+				translate([wheel_height / 2 + rim_width + 0.5, 0, 0]) {
+					circle(r=wheel_height / 2 - hollow_thickness);
+				}
+				translate([rim_width, - height / 2 + hollow_thickness, 0]) {
+					square([0.5, height - hollow_thickness * 2]);
+				}
+			}
+			translate([-padding, - height / 2 + hollow_thickness, 0]) {
+				square([rim_width + padding, height - hollow_thickness * 2]);
+			}
+		}
+	}
+}
+
+module tread(type, angle, height, width, tire_thickness, wheel_diameter, wheel_height, rim_height) {
 	wheel_radius = wheel_diameter / 2;
 	tire_radius = wheel_radius + tire_thickness;
 	tire_circumference = 2 * PI * tire_radius;
 	tire_height = wheel_height - rim_height * 2;
-	tire_height_padded = tire_height + padding * 2;
 	slice_width = width / tire_circumference * 360;
 
 	if (type == "simple") {
@@ -72,42 +172,6 @@ module tread(type, angle, height, width, tire_thickness, hollow_tube_thickness, 
 			rotate([0, 0, i * angle]) {
 				translate([0, 0, -tire_height / 2]) {
 					donutSlice3D(tire_radius, tire_radius + height, 0, slice_width, tire_height);
-				}
-			}
-		}
-	} else if (type == "hemispherical") {
-		rotate_extrude() {
-			translate([tire_radius, 0, 0]) {
-				difference() {
-					circle(r=tire_height / 2);
-					translate([-tire_height_padded, -tire_height_padded / 2, 0]) {
-						square(tire_height_padded);
-					}
-				}
-			}
-		}
-	} else if (type == "tube") {
-		rotate_extrude() {
-			translate([wheel_radius, 0, 0]) {
-				difference() {
-					hull() {
-						translate([0, -tire_height_padded / 2, 0]) {
-							square([0.5, tire_height_padded]);
-						}
-						translate([wheel_height / 2 + 0.5, 0, 0]) {
-							circle(r=wheel_height / 2);
-						}
-					}
-					if (hollow_tube_thickness > 0) {
-						hull() {
-							translate([-0.1, - tire_height_padded / 2 + hollow_tube_thickness, 0]) {
-								square([0.6, tire_height_padded - hollow_tube_thickness * 2]);
-							}
-							translate([wheel_height / 2 + 0.5, 0, 0]) {
-								circle(r=wheel_height / 2 - hollow_tube_thickness);
-							}
-						}
-					}
 				}
 			}
 		}
