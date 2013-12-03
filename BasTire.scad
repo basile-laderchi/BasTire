@@ -15,20 +15,21 @@ rim_height = 1;
 
 /*
  *
- * BasTire v2.01
+ * BasTire v2.02
  *
  * by Basile Laderchi
  *
- * Licensed under Creative Commons Attribution-ShareAlike 3.0 Unported http://creativecommons.org/licenses/by-sa/3.0/
+ * Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International http://creativecommons.org/licenses/by-nc-sa/4.0/
  *
- * v 2.01, 11 September 2013 : Added old tread_type to tire_type. Renamed old tread_type "tube" to tire_type "bike". Added tire_type "auto"
- * v 2.00, 10 September 2013 : Added tire_type and rim_width (from wheel) parameters. Change values accepted for tread_type parameter. Changed hollow_tube_thickness parameter to hollow_tire_thickness
- * v 1.05,  6 September 2013 : Added tread_type "tube". It can use the hollow_tube_thickness parameter
- * v 1.04,  6 September 2013 : Renamed tread_type "tube" to "hemispherical" and dropped tread_type "hollow_tube"
- * v 1.03,  5 September 2013 : Added tread_type "hollow_tube" and hollow_tube_thickness parameter
- * v 1.02, 29    August 2013 : Added tread_type "tube", in tread_type "simple" changed from cubes to arcs
- * v 1.01, 27    August 2013 : Fixed invalid Manifold
- * v 1.00, 27    August 2013 : Initial release
+ * v 2.02,  3 Dec 2013 : Changed license from CC BY-SA 3.0 to CC BY-NC-SA 4.0
+ * v 2.01, 11 Sep 2013 : Added old tread_type to tire_type. Renamed old tread_type "tube" to tire_type "bike". Added tire_type "auto"
+ * v 2.00, 10 Sep 2013 : Added tire_type and rim_width (from wheel) parameters. Change values accepted for tread_type parameter. Changed hollow_tube_thickness parameter to hollow_tire_thickness
+ * v 1.05,  6 Sep 2013 : Added tread_type "tube". It can use the hollow_tube_thickness parameter
+ * v 1.04,  6 Sep 2013 : Renamed tread_type "tube" to "hemispherical" and dropped tread_type "hollow_tube"
+ * v 1.03,  5 Sep 2013 : Added tread_type "hollow_tube" and hollow_tube_thickness parameter
+ * v 1.02, 29 Aug 2013 : Added tread_type "tube", in tread_type "simple" changed from cubes to arcs
+ * v 1.01, 27 Aug 2013 : Fixed invalid Manifold
+ * v 1.00, 27 Aug 2013 : Initial release
  *
  */
 
