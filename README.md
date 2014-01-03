@@ -1,5 +1,6 @@
 BasTire [![Project Status](http://stillmaintained.com/basile-laderchi/BasTire.png)](http://stillmaintained.com/basile-laderchi/BasTire)
 =======
+v 2.03,  3 Jan 2014 : Added parameter wheel\_extra\_height (from wheel)  
 v 2.02,  3 Dec 2013 : Changed license from CC BY-SA 3.0 to CC BY-NC-SA 4.0  
 v 2.01, 11 Sep 2013 : Added old tread\_type to tire\_type. Renamed old tread\_type "tube" to tire\_type "bike". Added tire\_type "auto"  
 v 2.00, 10 Sep 2013 : Added tire\_type and rim\_width (from wheel) parameters. Change values accepted for tread\_type parameter. Changed hollow\_tube\_thickness parameter to hollow\_tire\_thickness  

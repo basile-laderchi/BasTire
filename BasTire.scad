@@ -10,17 +10,19 @@ hollow_tire_thickness = 1;
 // Same as BasWheel parameters
 wheel_diameter = 60;
 wheel_height = 10;
+wheel_extra_height = 0;
 rim_width = 1;
 rim_height = 1;
 
 /*
  *
- * BasTire v2.02
+ * BasTire v2.03
  *
  * by Basile Laderchi
  *
  * Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International http://creativecommons.org/licenses/by-nc-sa/4.0/
  *
+ * v 2.03,  3 Jan 2014 : Added parameter wheel_extra_height (from wheel)
  * v 2.02,  3 Dec 2013 : Changed license from CC BY-SA 3.0 to CC BY-NC-SA 4.0
  * v 2.01, 11 Sep 2013 : Added old tread_type to tire_type. Renamed old tread_type "tube" to tire_type "bike". Added tire_type "auto"
  * v 2.00, 10 Sep 2013 : Added tire_type and rim_width (from wheel) parameters. Change values accepted for tread_type parameter. Changed hollow_tube_thickness parameter to hollow_tire_thickness
@@ -33,14 +35,16 @@ rim_height = 1;
  *
  */
 
-basTire(tire_type, tread_type, tread_angle, tread_height, tread_width, tire_thickness, auto_tire_roundness_radius, hollow_tire_thickness, wheel_diameter, wheel_height, rim_width, rim_height, $fn=100);
+basTire(tire_type, tread_type, tread_angle, tread_height, tread_width, tire_thickness, auto_tire_roundness_radius, hollow_tire_thickness, wheel_diameter, wheel_height, wheel_extra_height, rim_width, rim_height, $fn=100);
 
 use <MCAD/2Dshapes.scad>
 
-module basTire(tire_type, tread_type, tread_angle, tread_height, tread_width, tire_thickness, auto_tire_roundness_radius, hollow_tire_thickness, wheel_diameter, wheel_height, rim_width, rim_height) {
+module basTire(tire_type, tread_type, tread_angle, tread_height, tread_width, tire_thickness, auto_tire_roundness_radius, hollow_tire_thickness, wheel_diameter, wheel_height, wheel_extra_height, rim_width, rim_height) {
+	wheel_full_height = wheel_height + wheel_extra_height;
+
 	union() {
-		tire(tire_type, tire_thickness, auto_tire_roundness_radius, hollow_tire_thickness, wheel_diameter, wheel_height, rim_width, rim_height);
-		tread(tread_type, tread_angle, tread_height, tread_width, tire_thickness, wheel_diameter, wheel_height, rim_height);
+		tire(tire_type, tire_thickness, auto_tire_roundness_radius, hollow_tire_thickness, wheel_diameter, wheel_full_height, rim_width, rim_height);
+		tread(tread_type, tread_angle, tread_height, tread_width, tire_thickness, wheel_diameter, wheel_full_height, rim_height);
 	}
 }
 
